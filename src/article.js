@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     },
   });
 
-const Article = ({ id, name, link, description, deleteClickHandler }) => {
+const Article = ({ id, name, link, description, deleteClickHandler, editClickHandler}) => {
 
     const classes = useStyles();
 
@@ -46,6 +46,9 @@ const Article = ({ id, name, link, description, deleteClickHandler }) => {
         </Button></a>
         <Button size="small" color="primary" onClick={() => deleteClickHandler(id)}>
           Delete
+        </Button>
+        <Button size="small" color="primary" onClick={() => editClickHandler(id)}>
+          Edit
         </Button>
       </CardActions>
     </Card>

@@ -8,11 +8,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import './form.css';
 
-const initialState = {
-    name: '',
-    link: '',
-    description: ''
-}
+// const initialState = {
+//     name: '',
+//     link: '',
+//     description: ''
+// }
 
 const useStyles = makeStyles({
     root: {
@@ -35,14 +35,40 @@ const useStyles = makeStyles({
     }
 });
 
-const ArticleForm = ({ articles, setArticles }) => {
+const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle, setSelectedArticle }) => {
 
     const classes = useStyles();
+
+    let initialState = isPost ? {
+        name: '',
+        link: '',
+        description: ''
+    } : articles.find(article => article.id === selectedArticle)
+    console.log('INITIAL STATE', initialState)
+
+
+    const formTitle = isPost ? 'Add a New Article' : `Edit ${(articles.find(article => article.id === selectedArticle).name)}`
+
+    const handleClearClick = (clearFunction) => {
+
+        if (!isPost) {
+            setIsPost(true)
+            initialState = {
+                name: '',
+                link: '',
+                description: ''
+            }
+            setIsPost(true)
+            setIsPost(true)
+            setSelectedArticle(null)
+        }
+        clearFunction()
+    }
 
     return (
         <Fragment>
             <Formik initialValues={initialState}
-                onSubmit={(values, actions) => {
+                onSubmit={isPost ? (values, actions) => {
                     const requestPost = {
                         ...values
                     };
@@ -64,23 +90,53 @@ const ArticleForm = ({ articles, setArticles }) => {
 
                     actions.setSubmitting(false);
                     actions.resetForm();
-                }}
+                } :
+                    (values, actions) => {
+                        const requestPut = {
+                            ...values
+                        };
+
+                        console.log(requestPut);
+
+                        const url = `http://127.0.0.1:8000/articles/${selectedArticle}/`
+
+                        fetch(url, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(requestPut),
+                        })
+                            .then(res => res.json())
+                            .then((putResult) => {
+                                const nonUpdatedArticles = articles.filter(article => article.id !== selectedArticle) 
+                                setArticles([...nonUpdatedArticles, putResult])
+                            })
+                            .catch((err) => console.error(err));
+
+                        setIsPost(true)
+                        setSelectedArticle(null)
+                        actions.setSubmitting(false);
+                        actions.resetForm();
+                    }
+
+                }
                 validationSchema={Yup.object().shape({
                     name: Yup.string().max(60).required('Required'),
                     link: Yup.string().max(2000).url().required('Required'),
                     description: Yup.string().max(250).required('Required')
                 })}>
                 {
-                    ({ isSubmitting, handleReset }) => (
+                    ({ values, isSubmitting, handleReset }) => (
                         <Fragment>
                             <Card className={classes.root}>
                                 <Form>
                                     <Typography className={classes.header} gutterBottom variant="h5" component="h2">
-                                        Add a New Article
+                                        {formTitle}
                                     </Typography>
                                     <FormGroup>
                                         <InputLabel htmlFor="name">Name</InputLabel>
-                                        <Field className={classes.input} name="name" type="text" component={CustomInput} />
+                                        <Field className={classes.input} name="name" type="text" component={CustomInput} value={initialState.name} />
                                     </FormGroup>
 
                                     <FormGroup>
@@ -95,7 +151,7 @@ const ArticleForm = ({ articles, setArticles }) => {
 
                                     <div className={classes.buttons}>
                                         <div>
-                                            <Button type="reset" onClick={handleReset}>Clear</Button>
+                                            <Button type="reset" onClick={() => handleClearClick(handleReset)}>Clear</Button>
                                         </div>
 
                                         <div>

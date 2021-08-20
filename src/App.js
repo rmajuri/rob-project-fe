@@ -7,6 +7,8 @@ import Typography from '@material-ui/core/Typography';
 
 const App = () => {
   const [articles, setArticles] = useState([])
+  const [isPost, setIsPost] = useState(true)
+  const [selectedArticle, setSelectedArticle] = useState(null)
 
 
   const fetchArticles = () => {
@@ -22,6 +24,12 @@ const App = () => {
       .catch((err) => {
         console.error(err)
       })
+  }
+
+  const handleEditClick= (articleId) => {
+    setIsPost(false)
+    setSelectedArticle(articleId)
+    console.log('ARTICLES', articles)
   }
 
   const handleDeleteClick = (articleId) => {
@@ -45,12 +53,22 @@ const App = () => {
     fetchArticles()
   }, [])
 
-  const renderArticles = articles.map(article => <Article key={article.id} {...article} deleteClickHandler={handleDeleteClick} />)
+  const renderArticles = articles.map((article) => {
+    return <Article
+      key={article.id}
+      {...article}
+      deleteClickHandler={handleDeleteClick}
+      setIsPost={setIsPost}
+      selectedArticle={selectedArticle}
+      setSelectedArticle={setSelectedArticle}
+      editClickHandler={handleEditClick}
+    />
+  })
 
 
   return (
     <div className="App">
-      <Typography  variant="h4" component="header">
+      <Typography variant="h4" component="header">
         News Tracker
       </Typography>
       <Typography gutterBottom variant="subtitle1" component="header">
@@ -60,7 +78,14 @@ const App = () => {
         <div>
           {articles ? renderArticles : null}
         </div>
-        <ArticleForm articles={articles} setArticles={setArticles} />
+        <ArticleForm
+          isPost={isPost}
+          setIsPost={setIsPost}
+          articles={articles}
+          setArticles={setArticles}
+          selectedArticle={selectedArticle}
+          setSelectedArticle={setSelectedArticle}
+        />
       </div>
     </div>
   )
