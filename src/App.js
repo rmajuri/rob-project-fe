@@ -1,6 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import Article from './article'
+import ArticleForm from './form'
 
 import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
@@ -33,11 +33,7 @@ const App = () => {
       })
       .then((status) => {
         console.log(status)
-        if (status === 204) {
-          setArticles(articles.filter(article => article.id !== articleId))
-        } else {
-          throw 'Failure while trying to delete article'
-        }
+        setArticles(articles.filter(article => article.id !== articleId))
       })
       .catch((err) => {
         console.error(err)
@@ -54,13 +50,18 @@ const App = () => {
 
   return (
     <div className="App">
-      <Typography gutterBottom variant="h4" component="header">
+      <Typography  variant="h4" component="header">
         News Tracker
       </Typography>
       <Typography gutterBottom variant="subtitle1" component="header">
         Curate a collection of news articles from around the web.
       </Typography>
-      {articles ? renderArticles : null}
+      <div className="grid">
+        <div>
+          {articles ? renderArticles : null}
+        </div>
+        <ArticleForm articles={articles} setArticles={setArticles} />
+      </div>
     </div>
   )
 }

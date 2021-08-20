@@ -10,6 +10,10 @@
   color: white;
 }
 
+.App header {
+  margin-top: 1rem;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -32,4 +36,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.grid {
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
