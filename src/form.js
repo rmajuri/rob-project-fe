@@ -8,11 +8,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import './form.css';
 
-// const initialState = {
-//     name: '',
-//     link: '',
-//     description: ''
-// }
+let initialState = {
+    name: '',
+    link: '',
+    description: ''
+}
 
 const useStyles = makeStyles({
     root: {
@@ -39,26 +39,23 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
 
     const classes = useStyles();
 
-    let initialState = isPost ? {
-        name: '',
-        link: '',
-        description: ''
-    } : articles.find(article => article.id === selectedArticle)
-    console.log('INITIAL STATE', initialState)
-
+    if (!isPost) {
+        initialState = articles.find(article => article.id === selectedArticle)
+        console.log(selectedArticle)
+        console.log('INITIAL STATE', initialState)
+    } else {
+        initialState = {
+            name: '',
+            link: '',
+            description: ''
+        }
+    }
 
     const formTitle = isPost ? 'Add a New Article' : `Edit ${(articles.find(article => article.id === selectedArticle).name)}`
 
-    const handleClearClick = (clearFunction) => {
+    const handleClearClick = clearFunction => {
 
         if (!isPost) {
-            setIsPost(true)
-            initialState = {
-                name: '',
-                link: '',
-                description: ''
-            }
-            setIsPost(true)
             setIsPost(true)
             setSelectedArticle(null)
         }
@@ -68,6 +65,7 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
     return (
         <Fragment>
             <Formik initialValues={initialState}
+                enableReinitialize={true}
                 onSubmit={isPost ? (values, actions) => {
                     const requestPost = {
                         ...values
@@ -75,7 +73,7 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
 
                     console.log(requestPost);
 
-                    fetch('http://127.0.0.1:8000/articles/', {
+                    fetch('http://127.0.0.1:8000/api/articles/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -85,6 +83,7 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
                         .then(res => res.json())
                         .then((postResult) => {
                             setArticles([...articles, postResult])
+                            console.log('POST')
                         })
                         .catch((err) => console.error(err));
 
@@ -98,7 +97,7 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
 
                         console.log(requestPut);
 
-                        const url = `http://127.0.0.1:8000/articles/${selectedArticle}/`
+                        const url = `http://127.0.0.1:8000/api/articles/${selectedArticle}/`
 
                         fetch(url, {
                             method: 'PUT',
@@ -109,8 +108,9 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
                         })
                             .then(res => res.json())
                             .then((putResult) => {
-                                const nonUpdatedArticles = articles.filter(article => article.id !== selectedArticle) 
+                                const nonUpdatedArticles = articles.filter(article => article.id !== selectedArticle)
                                 setArticles([...nonUpdatedArticles, putResult])
+                                console.log('PUT')
                             })
                             .catch((err) => console.error(err));
 
@@ -132,11 +132,11 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
                             <Card className={classes.root}>
                                 <Form>
                                     <Typography className={classes.header} gutterBottom variant="h5" component="h2">
-                                        {formTitle}
+                                        {isPost ? formTitle : <i>{formTitle}</i>}
                                     </Typography>
                                     <FormGroup>
                                         <InputLabel htmlFor="name">Name</InputLabel>
-                                        <Field className={classes.input} name="name" type="text" component={CustomInput} value={initialState.name} />
+                                        <Field className={classes.input} name="name" type="text" component={CustomInput} />
                                     </FormGroup>
 
                                     <FormGroup>

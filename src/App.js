@@ -10,30 +10,14 @@ const App = () => {
   const [isPost, setIsPost] = useState(true)
   const [selectedArticle, setSelectedArticle] = useState(null)
 
-
-  const fetchArticles = () => {
-    fetch('http://127.0.0.1:8000/articles/', { method: 'GET', headers: { 'Content-Type': 'application/json' } })
-      .then((res) => {
-        return res.json()
-      })
-      .then((articleResults) => {
-        console.log(articleResults)
-        setArticles(articleResults)
-
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }
-
-  const handleEditClick= (articleId) => {
+  const handleEditClick = (articleId) => {
     setIsPost(false)
     setSelectedArticle(articleId)
     console.log('ARTICLES', articles)
   }
 
   const handleDeleteClick = (articleId) => {
-    const url = `http://127.0.0.1:8000/articles/${articleId}/`
+    const url = `http://127.0.0.1:8000/api/articles/${articleId}/`
 
     fetch(url, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } })
       .then((res) => {
@@ -49,6 +33,21 @@ const App = () => {
   }
 
   useEffect(() => {
+
+    const fetchArticles = () => {
+      fetch('http://127.0.0.1:8000/api/articles/', { method: 'GET', headers: { 'Content-Type': 'application/json' } })
+        .then((res) => {
+          return res.json()
+        })
+        .then((articleResults) => {
+          setArticles(articleResults)
+  
+        })
+        .catch((err) => {
+          console.error(err)
+        })
+    }
+
     setArticles([])
     fetchArticles()
   }, [])
