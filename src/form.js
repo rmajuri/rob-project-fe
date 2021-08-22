@@ -59,7 +59,7 @@ const ArticleForm = ({ articles, setArticles, isPost, setIsPost, selectedArticle
             setIsPost(true)
             setSelectedArticle(null)
         }
-        clearFunction()
+        // clearFunction()
     }
 
     return (
