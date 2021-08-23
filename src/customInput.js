@@ -10,4 +10,4 @@ const CustomInput = ({ field, form: { touched, errors }, ...props }) => (
     </div>
 );
 
-export default CustomInput;
+export default CustomInput
